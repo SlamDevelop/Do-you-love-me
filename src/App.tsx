@@ -110,102 +110,116 @@ export default function App() {
 
   return (
     <main
-      class={classNames(
-        [
-          "flex",
-          "gap-8",
-          "items-center",
-          "justify-center",
-          "h-screen",
-          "bg-background",
-        ],
-        { "flex-col": !isYes() }
-      )}
+      class={classNames([
+        "flex",
+        "flex-col",
+        "justify-between",
+        "h-screen",
+        "bg-background",
+        "p-2",
+      ])}
       onMouseMove={(event) =>
         setMousePos({ x: event.clientX, y: event.clientY })
       }
     >
-      <Show
-        when={!isYes()}
-        fallback={
-          <>
-            <Text class="text-center" variant="bold" size="2xl">
-              {Translations.labelMeToo}
-            </Text>
-            <Emoji variant="face_blowing_a_kiss" />
-          </>
-        }
+      <article
+        class={classNames(
+          ["flex", "gap-8", "items-center", "justify-center", "flex-grow"],
+          {
+            "flex-col": !isYes(),
+          }
+        )}
       >
-        <Text class="text-center" variant="bold" size="2xl">
-          {Translations.labelDoYouLoveMe}
-        </Text>
-        <section
-          class={classNames(["flex", "gap-8"])}
-          onMouseEnter={() => setStartTrackMouse(!isMobile())}
+        <Show
+          when={!isYes()}
+          fallback={
+            <>
+              <Text class="text-center" variant="bold" size="2xl">
+                {Translations.labelMeToo}
+              </Text>
+              <Emoji variant="face_blowing_a_kiss" />
+            </>
+          }
         >
-          <div
-            class={classNames({ fixed: isStartTrackMouse() })}
-            style={
-              isStartTrackMouse()
-                ? {
-                    top: `${(mousePos()?.y ?? 0) - 28}px`,
-                    left: `${(mousePos()?.x ?? 0) - 28}px`,
-                  }
-                : isMobile()
-                ? { scale: 1 + RANGE_SCALE_BTN * countPressNo() }
-                : {}
-            }
+          <Text class="text-center" variant="bold" size="2xl">
+            {Translations.labelDoYouLoveMe}
+          </Text>
+          <section
+            class={classNames(["flex", "gap-8"])}
+            onMouseEnter={() => setStartTrackMouse(!isMobile())}
           >
-            <EmojiButton
-              ref={(el) => (refYesButton = el)}
-              checked={isYes()}
-              emoji="red_heart"
-              onClick={setYes}
-            >
-              <Text class="text-text-white">{Translations.btnYes}</Text>
-            </EmojiButton>
-          </div>
-
-          <Show
-            when={
-              (!isMobile() && bgEmojis().length < MAX_BG_EMOJIS) ||
-              (isMobile() && countPressNo() < MAX_PRESS_NO_BTN)
-            }
-          >
-            {/* Temporary divider */}
-            <Show when={isStartTrackMouse()}>
-              <div style={btnYesSizes()} />
-            </Show>
-
             <div
+              class={classNames({ fixed: isStartTrackMouse() })}
               style={
-                isMobile()
-                  ? { scale: 1 - RANGE_SCALE_BTN * countPressNo() }
+                isStartTrackMouse()
+                  ? {
+                      top: `${(mousePos()?.y ?? 0) - 28}px`,
+                      left: `${(mousePos()?.x ?? 0) - 28}px`,
+                    }
+                  : isMobile()
+                  ? { scale: 1 + RANGE_SCALE_BTN * countPressNo() }
                   : {}
               }
             >
-              <EmojiButton emoji="moai" onClick={handleNo}>
-                <Text class="text-text-white">{Translations.btnNo}</Text>
+              <EmojiButton
+                ref={(el) => (refYesButton = el)}
+                checked={isYes()}
+                emoji="red_heart"
+                onClick={setYes}
+              >
+                <Text class="text-text-white">{Translations.btnYes}</Text>
               </EmojiButton>
             </div>
-          </Show>
-        </section>
-      </Show>
 
-      <For each={bgEmojis()}>
-        {(emoji) => (
-          <div
-            class="fixed"
-            style={{
-              top: `${emoji.y}%`,
-              left: `${emoji.x}%`,
-              rotate: `${emoji.angle}deg`,
-            }}
-          >
-            <Emoji variant={emoji.variant} size={emoji.size} />
-          </div>
-        )}
-      </For>
+            <Show
+              when={
+                (!isMobile() && bgEmojis().length < MAX_BG_EMOJIS) ||
+                (isMobile() && countPressNo() < MAX_PRESS_NO_BTN)
+              }
+            >
+              {/* Temporary divider */}
+              <Show when={isStartTrackMouse()}>
+                <div style={btnYesSizes()} />
+              </Show>
+
+              <div
+                style={
+                  isMobile()
+                    ? { scale: 1 - RANGE_SCALE_BTN * countPressNo() }
+                    : {}
+                }
+              >
+                <EmojiButton emoji="moai" onClick={handleNo}>
+                  <Text class="text-text-white">{Translations.btnNo}</Text>
+                </EmojiButton>
+              </div>
+            </Show>
+          </section>
+        </Show>
+
+        <For each={bgEmojis()}>
+          {(emoji) => (
+            <div
+              class="fixed"
+              style={{
+                top: `${emoji.y}%`,
+                left: `${emoji.x}%`,
+                rotate: `${emoji.angle}deg`,
+              }}
+            >
+              <Emoji variant={emoji.variant} size={emoji.size} />
+            </div>
+          )}
+        </For>
+      </article>
+
+      <section class={classNames("flex", "justify-center")}>
+        <a href="https://github.com/SlamDevelop" target="_blank">
+          <Text class="!text-neutral-200" size="sm">
+            {Translations.author}
+          </Text>
+        </a>
+      </section>
     </main>
   );
 }
