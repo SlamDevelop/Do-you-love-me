@@ -1,0 +1,17 @@
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("../public/e-Ukraine-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "e-Ukraine";
+  src: url("../public/e-Ukraine-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
