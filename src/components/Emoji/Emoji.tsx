@@ -13,7 +13,24 @@ import emoji_red_heart from "~/assets/emoji/red-heart.png";
 import emoji_smiling_face_with_heart_eyes from "~/assets/emoji/smiling-face-with-heart-eyes.png";
 import emoji_smiling_face_with_hearts from "~/assets/emoji/smiling-face-with-hearts.png";
 
-const emojis = {
+export const kindEmojis = [
+  "heart_on_fire",
+  "mending_heart",
+  "red_heart",
+  "smiling_face_with_heart_eyes",
+  "smiling_face_with_hearts",
+];
+
+export const angryEmojis = [
+  "angry_face_with_horns",
+  "angry_face",
+  "broken_heart",
+  "face_screaming_in_fear",
+  "moai",
+  "pouting_face",
+];
+
+export const emojis = {
   angry_face_with_horns: emoji_angry_face_with_horns,
   angry_face: emoji_angry_face,
   broken_heart: emoji_broken_heart,
@@ -28,7 +45,7 @@ const emojis = {
   smiling_face_with_hearts: emoji_smiling_face_with_hearts,
 };
 
-const sizes = {
+export const emojiSizes = {
   sm: "w-4 h-4",
   md: "w-6 h-6",
   lg: "w-8 h-8",
@@ -38,7 +55,7 @@ const sizes = {
 export type EmojiProps = {
   readonly class?: string;
   readonly variant: keyof typeof emojis;
-  readonly size?: keyof typeof sizes;
+  readonly size?: keyof typeof emojiSizes;
 };
 
 export const Emoji: Component<EmojiProps> = (props) => {
@@ -51,7 +68,10 @@ export const Emoji: Component<EmojiProps> = (props) => {
 
   return (
     <img
-      class={classNames([sizes[propsWithDefault.size], propsWithDefault.class])}
+      class={classNames([
+        emojiSizes[propsWithDefault.size],
+        propsWithDefault.class,
+      ])}
       src={emojis[propsWithDefault.variant]}
       alt={`emoji_${propsWithDefault.variant}`}
     />
