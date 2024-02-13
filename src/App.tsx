@@ -2,7 +2,14 @@ import classNames from "classnames";
 import { Text } from "./components/Text";
 import { Translations } from "./translations";
 import { EmojiButton } from "./components/EmojiButton";
-import { For, Show, createEffect, createSignal, on } from "solid-js";
+import {
+  For,
+  Show,
+  createEffect,
+  createMemo,
+  createSignal,
+  on,
+} from "solid-js";
 import {
   Emoji,
   EmojiProps,
@@ -11,6 +18,7 @@ import {
   kindEmojis,
 } from "./components/Emoji";
 import { getRandomInt } from "./helpers/getRandomInt";
+import { createWindowSize } from "@solid-primitives/resize-observer";
 
 type MousePosition = {
   readonly x: number;
@@ -31,9 +39,13 @@ type BgEmoji = {
 };
 
 export default function App() {
+  const MAX_BG_EMOJIS = 45;
+  const MAX_PRESS_NO_BTN = 10;
+  const RANGE_SCALE_BTN = 0.05;
+
   let refYesButton: HTMLButtonElement;
 
-  const [isStart, setStart] = createSignal<boolean>(false);
+  const [isStartTrackMouse, setStartTrackMouse] = createSignal<boolean>(false);
   const [mousePos, setMousePos] = createSignal<MousePosition>();
 
   const [btnYesSizes, setBtnYesSizes] = createSignal<ButtonYesSizes>();
@@ -41,6 +53,16 @@ export default function App() {
   const [isYes, setYes] = createSignal<boolean>(false);
 
   const [bgEmojis, setBgEmojis] = createSignal<BgEmoji[]>([]);
+
+  const [countPressNo, setCountPressNo] = createSignal<number>(0);
+
+  const size = createWindowSize();
+
+  const isMobile = createMemo(() => size.width < 768);
+
+  createEffect(
+    on(isMobile, (isMobile) => isMobile && setStartTrackMouse(false))
+  );
 
   createEffect(
     on(isYes, () => {
@@ -56,6 +78,10 @@ export default function App() {
   );
 
   const handleNo = () => {
+    if (isMobile()) {
+      setCountPressNo((prev) => prev + 1);
+    }
+
     const emojiSizeKeys = Object.keys(emojiSizes);
 
     const randomEmoji: BgEmoji = {
@@ -115,16 +141,18 @@ export default function App() {
         </Text>
         <section
           class={classNames(["flex", "gap-8"])}
-          onMouseEnter={() => setStart(true)}
+          onMouseEnter={() => setStartTrackMouse(!isMobile())}
         >
           <div
-            class={classNames({ fixed: isStart() })}
+            class={classNames({ fixed: isStartTrackMouse() })}
             style={
-              isStart()
+              isStartTrackMouse()
                 ? {
                     top: `${(mousePos()?.y ?? 0) - 28}px`,
                     left: `${(mousePos()?.x ?? 0) - 28}px`,
                   }
+                : isMobile()
+                ? { scale: 1 + RANGE_SCALE_BTN * countPressNo() }
                 : {}
             }
           >
@@ -138,15 +166,28 @@ export default function App() {
             </EmojiButton>
           </div>
 
-          <Show when={bgEmojis().length < 45}>
+          <Show
+            when={
+              (!isMobile() && bgEmojis().length < MAX_BG_EMOJIS) ||
+              (isMobile() && countPressNo() < MAX_PRESS_NO_BTN)
+            }
+          >
             {/* Temporary divider */}
-            <Show when={isStart()}>
+            <Show when={isStartTrackMouse()}>
               <div style={btnYesSizes()} />
             </Show>
 
-            <EmojiButton emoji="moai" onClick={handleNo}>
-              <Text class="text-text-white">{Translations.btnNo}</Text>
-            </EmojiButton>
+            <div
+              style={
+                isMobile()
+                  ? { scale: 1 - RANGE_SCALE_BTN * countPressNo() }
+                  : {}
+              }
+            >
+              <EmojiButton emoji="moai" onClick={handleNo}>
+                <Text class="text-text-white">{Translations.btnNo}</Text>
+              </EmojiButton>
+            </div>
           </Show>
         </section>
       </Show>

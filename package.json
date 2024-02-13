@@ -24,6 +24,7 @@
     "vite-plugin-solid": "^2.8.2"
   },
   "dependencies": {
+    "@solid-primitives/resize-observer": "^2.0.23",
     "classnames": "^2.5.1",
     "solid-js": "^1.8.11"
   }
